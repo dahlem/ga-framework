@@ -16,7 +16,8 @@ check_PROGRAMS = $(TESTS)
 
 ga_framework_test_SOURCES =                                          \
 	ga_framework_suite.c                                         \
-	ga_population_test.c
+	ga_population_test.c                                         \
+	ga_environment_test.c
 
 
 ga_framework_test_CPPFLAGS =                                         \

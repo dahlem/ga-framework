@@ -13,64 +13,45 @@
 #include <CUnit/CUnit.h>
 #include <gsl/gsl_rng.h>
 
+#include "environment.h"
 #include "ga.h"
 #include "population.h"
 
-#include "ga_population_test.h"
+#include "ga_environment_test.h"
 
 
-
-void registerPopulationTests()
+double fitness(unsigned short *allele, int bits) 
 {
-    if (CU_register_suites(pop_suites) != CUE_SUCCESS) {
+    int i;
+    double result;
+
+    result = 0.0;
+    
+    for (i = 0; i < bits; ++i) {
+        if (allele[i]) {
+            result += 1.0;
+        }
+    }
+
+    return result;
+}
+
+
+void registerEnvironmentTests()
+{
+    if (CU_register_suites(env_suites) != CUE_SUCCESS) {
         fprintf(stderr, "Suite registration failed - %s\n", CU_get_error_msg());
         exit(CU_get_error());
     }
 }
 
 
-void testPopsizeUnspecified()
+void testEvaluate() 
 {
     population_t pop;
     const gsl_rng_type *rng_type = gsl_rng_mt19937;
     gsl_rng *rng;
-
-    gsl_rng_env_setup();
-    rng = gsl_rng_alloc(rng_type);
-
-    pop.size = 0;
-    pop.bits = 0;
-    
-    CU_ASSERT_EQUAL(initPopulation(rng, &pop), POPSIZE_UNSPECIFIED);
-    
-    gsl_rng_free(rng);
-}
-
-
-void testBitsUnspecified()
-{
-    population_t pop;
-    const gsl_rng_type *rng_type = gsl_rng_mt19937;
-    gsl_rng *rng;
-
-    gsl_rng_env_setup();
-    rng = gsl_rng_alloc(rng_type);
-
-    pop.size = 10;
-    pop.bits = 0;
-    
-    CU_ASSERT_EQUAL(initPopulation(rng, &pop), BITS_UNSPECIFIED);
-
-    gsl_rng_free(rng);
-}
-
-
-void testInit()
-{
-    population_t pop;
-    const gsl_rng_type *rng_type = gsl_rng_mt19937;
-    gsl_rng *rng;
-    int i, j;
+    int i;
 
     gsl_rng_env_setup();
     rng = gsl_rng_alloc(rng_type);
@@ -80,13 +61,13 @@ void testInit()
     
     CU_ASSERT_EQUAL(initPopulation(rng, &pop), 0);
 
-    for (i = 0; i < pop.size; ++i) {
-        for (j = 0; j < pop.bits; ++j) {
-            CU_ASSERT_TRUE(pop.individuals[i].allele[j] <= 1);
-            CU_ASSERT_TRUE(pop.individuals[i].allele[j] >= 0);
-        }
+    CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
+
+    for (i = 0; i < pop.bits; ++i) {
+        CU_ASSERT_TRUE(pop.individuals[i].fitness >= 0);
+        CU_ASSERT_TRUE(pop.individuals[i].fitness <= 10);
     }
-    
+
     CU_ASSERT_EQUAL(freePopulation(&pop), 0);
     gsl_rng_free(rng);
 }

@@ -7,3 +7,8 @@
 /configure.scan
 /libtool
 /stamp-h1
+Makefile
+Makefile.in
+.libs
+.deps
+autom4te.cache

@@ -18,10 +18,11 @@
 #include "ga.h"
 
 
-int select(population_t *pop, population_t *selected);
+int selection(population_t *pop, population_t *selected);
 int mutate(population_t *pop);
 int recombine(population_t *selected, population_t *pop);
 int crossover(population_t *selected, population_t *pop);
+int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int));
 
 
 #endif /* ENVIRONMENT_H */

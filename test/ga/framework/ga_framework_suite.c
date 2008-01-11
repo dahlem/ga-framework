@@ -9,6 +9,7 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <CUnit/Basic.h>
 
+#include "ga_environment_test.h"
 #include "ga_population_test.h"
 
 
@@ -20,6 +21,7 @@ int main(int argc, char* argv[])
     }
 
     registerPopulationTests();
+    registerEnvironmentTests();
     
     /* Run all tests using the CUnit Basic interface */
     CU_basic_set_mode(CU_BRM_VERBOSE);

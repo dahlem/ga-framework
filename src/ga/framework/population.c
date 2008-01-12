@@ -13,7 +13,37 @@
 
 
 
-int initPopulation(const gsl_rng *const rng, population_t *pop)
+int cpychrom(unsigned short *dest, const unsigned short *src, int bits)
+{
+    int i;
+    
+    for (i = 0; i < bits; ++i) {
+        dest[i] = src[i];
+    }
+    
+    return 0;
+}
+
+
+int cmpchromp(const void *p1, const void *p2)
+{
+    chromosome_t *chrom1, *chrom2;
+
+    chrom1 = (chromosome_t *) p1;
+    chrom2 = (chromosome_t *) p2;
+
+    if (chrom1->fitness < chrom2->fitness) {
+        return -1;
+    }
+    if (chrom1->fitness > chrom2->fitness) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+
+int rallocPopulation(const gsl_rng *const rng, population_t *pop)
 {
     int i, j;
     
@@ -36,6 +66,35 @@ int initPopulation(const gsl_rng *const rng, population_t *pop)
         for (j = 0; j < pop->size; ++j) {
             /* generate a random integer [0, 1] */
             pop->individuals[i].allele[j] = gsl_rng_uniform_int (rng, 2);
+        }
+    }
+    
+    return 0;
+}
+
+
+int callocPopulation(population_t *pop)
+{
+    int i, j;
+    
+    if (pop->size <= 0) {
+        return POPSIZE_UNSPECIFIED;
+    }
+
+    if (pop->bits <= 0) {
+        return BITS_UNSPECIFIED;
+    }
+
+    /* allocate the memory for the individuals */
+    pop->individuals = malloc(sizeof(chromosome_t) * pop->size);
+
+    /* allocate the bits for each individual and set to a random bit */
+    for (i = 0; i < pop->size; ++i) {
+        pop->individuals[i].allele = calloc(pop->bits, sizeof(unsigned short));
+        pop->individuals[i].fitness = 0.0;
+
+        for (j = 0; j < pop->size; ++j) {
+            pop->individuals[i].allele[j] = 0;
         }
     }
     

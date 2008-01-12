@@ -41,7 +41,7 @@ void testPopsizeUnspecified()
     pop.size = 0;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(initPopulation(rng, &pop), POPSIZE_UNSPECIFIED);
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), POPSIZE_UNSPECIFIED);
     
     gsl_rng_free(rng);
 }
@@ -59,7 +59,7 @@ void testBitsUnspecified()
     pop.size = 10;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(initPopulation(rng, &pop), BITS_UNSPECIFIED);
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), BITS_UNSPECIFIED);
 
     gsl_rng_free(rng);
 }
@@ -78,7 +78,7 @@ void testInit()
     pop.size = 10;
     pop.bits = 10;
     
-    CU_ASSERT_EQUAL(initPopulation(rng, &pop), 0);
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), 0);
 
     for (i = 0; i < pop.size; ++i) {
         for (j = 0; j < pop.bits; ++j) {

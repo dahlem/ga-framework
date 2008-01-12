@@ -15,14 +15,17 @@
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 
+#include <gsl/gsl_rng.h>
+
 #include "ga.h"
 
 
-int selection(population_t *pop, population_t *selected);
 int mutate(population_t *pop);
 int recombine(population_t *selected, population_t *pop);
 int crossover(population_t *selected, population_t *pop);
 int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int));
 
+int selection(const gsl_rng *const rng, population_t *pop, population_t *selected);
+int rws(const gsl_rng *const rng, population_t *pop, population_t *selected);
 
 #endif /* ENVIRONMENT_H */

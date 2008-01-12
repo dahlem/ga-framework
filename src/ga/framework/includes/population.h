@@ -24,7 +24,7 @@ int rallocPopulation(const gsl_rng *const rng, population_t *pop);
 int callocPopulation(population_t *pop);
 int freePopulation(population_t *pop);
 
-int cpychrom(unsigned short *dest, const unsigned short *src, int bits);
+int cpychrom(chromosome_t *dest, const chromosome_t *src, int bits);
 int cmpchromp(const void *p1, const void *p2);
 
 

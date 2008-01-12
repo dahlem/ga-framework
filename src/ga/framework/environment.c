@@ -102,8 +102,8 @@ int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
                 && (cumulative_probabilities[i+1] > u)) {
 
                 /* copy the selected individual into the new population */
-                cpychrom(selected->individuals[k].allele,
-                         pop->individuals[i + 1].allele,
+                cpychrom(&(selected->individuals[k]),
+                         &(pop->individuals[i + 1]),
                          pop->bits);
             }
         }

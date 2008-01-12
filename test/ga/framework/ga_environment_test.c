@@ -106,5 +106,6 @@ void testSelection()
                 pop.individuals[pop.size - 1].allele,
                 selected.individuals[i].allele) == 0)
             );
+        CU_ASSERT_EQUAL(selected.individuals[i].fitness, 1);
     }
 }

@@ -13,12 +13,13 @@
 
 
 
-int cpychrom(unsigned short *dest, const unsigned short *src, int bits)
+int cpychrom(chromosome_t *dest, const chromosome_t *src, int bits)
 {
     int i;
     
     for (i = 0; i < bits; ++i) {
-        dest[i] = src[i];
+        dest[i].allele = src[i].allele;
+        dest[i].fitness = src[i].fitness;
     }
     
     return 0;

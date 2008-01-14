@@ -15,13 +15,11 @@ void graytobinary(unsigned short *bin, unsigned short *gray, int n)
     int i;
 
     /* copy the high-order bit */
-    *bin = *gray;               
+    bin[n - 1] = gray[n -1];
 
     /* XOR the remaining bits */
-    for (i = 0; i < n; ++i) {
-        bin--;
-        gray--;
-        *bin= *(bin + 1)^*gray;   
+    for (i = (n - 2); i >= 0; i--) {
+        bin[i]= bin[i + 1]^gray[i];   
     }
 }
 
@@ -31,12 +29,10 @@ void binarytogray(unsigned short *bin, unsigned short *gray, int n)
     int i;
 
     /* copy the high-order bit */
-    *gray = *bin;
+    gray[n - 1] = bin [n - 1];
 
     /* XOR the remaining bits */
-    for (i = 0; i < n; ++i) {
-        gray--;
-        bin--;
-        *gray= *(bin + 1)^*bin;
+    for (i = (n - 2); i >= 0; i--) {
+        gray[i]= bin[i + 1]^bin[i];   
     }
 }

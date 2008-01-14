@@ -35,7 +35,7 @@ void testBinToGray()
         1, 1, 1
     };
 
-    binarytogray((seven_bin + 2), (seven_gray + 2), 3);
+    binarytogray(&seven_bin, &seven_gray, 3);
 
     CU_ASSERT_TRUE(seven_gray[2] == 1);
     CU_ASSERT_TRUE(seven_gray[1] == 0);
@@ -52,7 +52,7 @@ void testGrayToBin()
         0, 0, 0
     };
 
-    graytobinary((seven_bin + 2), (seven_gray + 2), 3);
+    graytobinary(&seven_bin, &seven_gray, 3);
 
     CU_ASSERT_TRUE(seven_bin[2] == 1);
     CU_ASSERT_TRUE(seven_bin[1] == 1);
@@ -68,9 +68,9 @@ void testBinToGrayToBin()
         1, 1, 1
     };
 
-    binarytogray((seven_bin + 2), (seven_gray + 2), 3);
+    binarytogray(&seven_bin, &seven_gray, 3);
     seven_gray[1] = 1;
-    graytobinary((seven_bin + 2), (seven_gray + 2), 3);
+    graytobinary(&seven_bin, &seven_gray, 3);
 
     CU_ASSERT_TRUE(seven_bin[2] == 1);
     CU_ASSERT_TRUE(seven_bin[1] == 0);

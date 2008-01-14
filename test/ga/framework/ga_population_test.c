@@ -17,6 +17,7 @@
 #include "population.h"
 
 #include "ga_population_test.h"
+#include "setup.h"
 
 
 
@@ -26,6 +27,25 @@ void registerPopulationTests()
         fprintf(stderr, "Suite registration failed - %s\n", CU_get_error_msg());
         exit(CU_get_error());
     }
+}
+
+
+int init_pop()
+{
+    rng_type_test = gsl_rng_mt19937;
+    rng_test = gsl_rng_alloc(rng_type_test);
+
+    if (rng_test == NULL) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+
+int clean_pop()
+{
+    gsl_rng_free(rng_test);
 }
 
 
@@ -99,53 +119,34 @@ void testCpychrom()
 void testPopsizeUnspecified()
 {
     population_t pop;
-    const gsl_rng_type *rng_type = gsl_rng_mt19937;
-    gsl_rng *rng;
-
-    gsl_rng_env_setup();
-    rng = gsl_rng_alloc(rng_type);
 
     pop.size = 0;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), GA_POPSIZE_UNSPECIFIED);
-    
-    gsl_rng_free(rng);
+    CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), GA_POPSIZE_UNSPECIFIED);
 }
 
 
 void testBitsUnspecified()
 {
     population_t pop;
-    const gsl_rng_type *rng_type = gsl_rng_mt19937;
-    gsl_rng *rng;
-
-    gsl_rng_env_setup();
-    rng = gsl_rng_alloc(rng_type);
 
     pop.size = 10;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), GA_BITS_UNSPECIFIED);
-
-    gsl_rng_free(rng);
+    CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), GA_BITS_UNSPECIFIED);
 }
 
 
 void testInit()
 {
     population_t pop;
-    const gsl_rng_type *rng_type = gsl_rng_mt19937;
-    gsl_rng *rng;
     int i, j;
-
-    gsl_rng_env_setup();
-    rng = gsl_rng_alloc(rng_type);
 
     pop.size = 10;
     pop.bits = 10;
     
-    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), 0);
+    CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
 
     for (i = 0; i < pop.size; ++i) {
         for (j = 0; j < pop.bits; ++j) {
@@ -155,5 +156,4 @@ void testInit()
     }
     
     CU_ASSERT_EQUAL(freePopulation(&pop), 0);
-    gsl_rng_free(rng);
 }

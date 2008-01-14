@@ -8,39 +8,16 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-#ifndef __GA_ENVIRONMENT_TEST_H__
-#define __GA_ENVIRONMENT_TEST_H__
+#ifndef __GA_SETUP_H__
+#define __GA_SETUP_H__
 
 
-#include <CUnit/CUnit.h>
-
-#include "setup.h"
+#include <gsl/gsl_rng.h>
 
 
-int init_env();
-int clean_env();
-
-void registerEnvironmentTests();
-
-void testEvaluate();
-void testSelection();
-void testOnePointCrossover();
-void testMutation();
-void testSurvive();
+static gsl_rng_type *rng_type_test = NULL;
+static gsl_rng *rng_test = NULL;
 
 
-static CU_TestInfo test_env[] = {
-    { "testEvaluate", testEvaluate },
-    { "testSelection", testSelection },
-    { "testOnePointCrossover", testOnePointCrossover },
-    { "testMutation", testMutation },
-    { "testSurvive", testSurvive },
-    CU_TEST_INFO_NULL,
-};
-
-static CU_SuiteInfo env_suites[] = {
-    { "TestGAEnv", init_env, clean_env, test_env },
-    CU_SUITE_INFO_NULL,
-};
 
 #endif

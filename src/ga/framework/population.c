@@ -142,7 +142,7 @@ int freePopulation(population_t *pop)
     }
 
     /* free memory for the allele */
-    for (i = 0; i < pop->size; ++i) {
+    for (i = 0; i < pop->size; i++) {
         if ((pop->individuals[i]).allele != NULL) {
             free((pop->individuals[i]).allele);
         }

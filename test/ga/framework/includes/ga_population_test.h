@@ -14,10 +14,13 @@
 
 #include <CUnit/CUnit.h>
 
+#include "setup.h"
+
+
+int init_pop();
+int clean_pop();
 
 void registerPopulationTests();
-
-
 
 void testCpypop();
 void testCpychrom();
@@ -36,7 +39,7 @@ static CU_TestInfo test_pop[] = {
 };
 
 static CU_SuiteInfo pop_suites[] = {
-    { "TestGAPop", NULL, NULL, test_pop },
+    { "TestGAPop", init_pop, clean_pop, test_pop },
     CU_SUITE_INFO_NULL,
 };
 

@@ -45,8 +45,8 @@ int mutate(const gsl_rng *const rng, double rate, population_t *pop)
             if (u <= rate) {
                 /* lazy convert the binary chromosome to the gray representation */
                 if (!isConverted) {
-                    binarytogray((pop->individuals[i].allele + pop->bits - 1),
-                                 (gray_code + pop->bits - 1),
+                    binarytogray(pop->individuals[i].allele,
+                                 gray_code,
                                  pop->bits);
                     isConverted = true;
                 }
@@ -58,14 +58,14 @@ int mutate(const gsl_rng *const rng, double rate, population_t *pop)
 
         /* if the chromosome was converted, convert it back into binary */
         if (isConverted) {
-            graytobinary((pop->individuals[i].allele + pop->bits - 1),
-                         (gray_code + pop->bits - 1),
+            graytobinary(pop->individuals[i].allele,
+                         gray_code,
                          pop->bits);
         }
     }
 
     if (gray_code != NULL) {
-//        free(gray_code);
+        free(gray_code);
     }
 
     return 0;
@@ -176,4 +176,21 @@ int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
     free(relative_probabilities);
 
     return 0;
+}
+
+int survive(population_t *pop, population_t *new)
+{
+    int i;
+    
+    qsort(new->individuals, new->size, sizeof(chromosome_t), cmpchromp);
+
+    for (i = (pop->size - 1); i >= 0; i--) {
+        if (pop->individuals[pop->size - i - 1].fitness < new->individuals[i].fitness) {
+            cpychrom(&(pop->individuals[pop->size - i - 1]),
+                     &(new->individuals[i]),
+                     pop->bits);
+        } else {
+            return 0;
+        }
+    }
 }

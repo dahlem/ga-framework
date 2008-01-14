@@ -29,6 +29,7 @@ ga_framework_test_CPPFLAGS =                                         \
 LDADD =                                                              \
 	-lcunit                                                      \
 	-lm                                                          \
+	-lgsl                                                        \
 	$(top_srcdir)/src/ga/framework/libgaframework.la
 
 

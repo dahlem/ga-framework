@@ -29,4 +29,6 @@ int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int));
 int selection(const gsl_rng *const rng, population_t *pop, population_t *selected);
 int rws(const gsl_rng *const rng, population_t *pop, population_t *selected);
 
+int survive(population_t *pop, population_t *new);
+
 #endif /* ENVIRONMENT_H */

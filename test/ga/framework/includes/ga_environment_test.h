@@ -21,11 +21,13 @@ void registerEnvironmentTests();
 
 void testEvaluate();
 void testSelection();
+void testOnePointCrossover();
 
 
 static CU_TestInfo test_env[] = {
     { "testEvaluate", testEvaluate },
     { "testSelection", testSelection },
+    { "testOnePointCrossover", testOnePointCrossover },
     CU_TEST_INFO_NULL,
 };
 

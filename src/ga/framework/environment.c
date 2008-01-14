@@ -20,20 +20,36 @@ int selection(const gsl_rng *const rng, population_t *pop, population_t *selecte
 }
 
 
-int mutate(population_t *pop)
+int mutate(const gsl_rng *const rng, population_t *pop)
 {
     return 0;
 }
 
 
-int recombine(population_t *selected, population_t *pop)
+int recombine(const gsl_rng *const rng, population_t *new)
 {
-    return crossover(selected, pop);
+    return onePointCrossover(rng, new);
 }
 
 
-int crossover(population_t *selected, population_t *pop)
+int onePointCrossover(const gsl_rng *const rng, population_t *new)
 {
+    int i, j;
+    int cut_off;
+    unsigned short temp;
+
+    for (i = 0; i < (new->size - 1); i += 2) {
+        /* the cross-over point has to be between 1 and bits-1,
+           otherwise there won't be a cross over at all. */
+        cut_off = gsl_rng_uniform_int(rng, new->bits - 2) + 1;
+
+        for (j = cut_off; j < new->bits; ++j) {
+            temp = (new->individuals[i]).allele[j];
+            (new->individuals[i]).allele[j] = (new->individuals[i + 1]).allele[j];
+            (new->individuals[i + 1]).allele[j] = temp;
+        }
+    }
+    
     return 0;
 }
 
@@ -43,8 +59,8 @@ int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int))
     int i;
 
     for (i = 0; i < pop->size; ++i) {
-        pop->individuals[i].fitness = fitnessFuncPtr(
-            pop->individuals[i].allele, pop->bits);
+        (pop->individuals[i]).fitness = fitnessFuncPtr(
+            (pop->individuals[i]).allele, pop->bits);
     }
 
     return 0;
@@ -58,7 +74,7 @@ double cumulativeFitness(population_t *pop)
     cumulative_fitness = 0.0;
     
     for (i = 0; i < pop->size; ++i) {
-        cumulative_fitness += pop->individuals[i].fitness;
+        cumulative_fitness += (pop->individuals[i]).fitness;
     }
 
     return cumulative_fitness;
@@ -82,7 +98,7 @@ int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
 
     /* calculate the relative propabibilities for each individual */
     for (i = 0; i < pop->size; ++i) {
-        relative_probabilities[i] = pop->individuals[i].fitness
+        relative_probabilities[i] = (pop->individuals[i]).fitness
             / cumulative_fitness;
     }
 
@@ -90,7 +106,7 @@ int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
 
     /* calculate the cumulative probabilities for each individual */
     for (i = 0; i < pop->size; ++i) {
-        cumulative_probability += relative_probabilities[i];        
+        cumulative_probability += relative_probabilities[i];
         cumulative_probabilities[i] = cumulative_probability;
     }
 

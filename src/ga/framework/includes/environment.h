@@ -20,11 +20,12 @@
 #include "ga.h"
 
 
-int mutate(population_t *pop);
-int recombine(population_t *selected, population_t *pop);
-int crossover(population_t *selected, population_t *pop);
-int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int));
+int mutate(const gsl_rng *const rng, population_t *pop);
 
+int recombine(const gsl_rng *const rng, population_t *new);
+int onePointCrossover(const gsl_rng *const rng, population_t *new);
+
+int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int));
 int selection(const gsl_rng *const rng, population_t *pop, population_t *selected);
 int rws(const gsl_rng *const rng, population_t *pop, population_t *selected);
 

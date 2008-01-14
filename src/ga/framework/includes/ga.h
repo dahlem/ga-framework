@@ -16,30 +16,24 @@
 #define __GA_H__
 
 
-#define POPSIZE_UNSPECIFIED     11
-#define BITS_UNSPECIFIED        12
+#define GA_POPSIZE_UNSPECIFIED      11
+#define GA_BITS_UNSPECIFIED         12
+#define GA_MALLOC_UNSUCCESSFUL      13
 
 
 
-struct chromosome
+typedef struct
 {
     unsigned short *allele;
     double fitness;
-};
+} chromosome_t;
 
-typedef struct chromosome chromosome_t;
-
-
-struct population
+typedef struct
 {
     chromosome_t *individuals;
     int bits;
     int size;
-};
-
-typedef struct population population_t;
-
-
+} population_t;
 
 
 #endif /* GA_H */

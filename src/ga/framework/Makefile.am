@@ -12,6 +12,7 @@ noinst_LTLIBRARIES = libgaframework.la
 
 libgaframework_la_SOURCES =                                           \
 	ga-debug.c                                                    \
+	utils.c                                                       \
 	environment.c                                                 \
 	population.c
 

@@ -8,33 +8,31 @@
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 
-#ifndef __GA_ENVIRONMENT_TEST_H__
-#define __GA_ENVIRONMENT_TEST_H__
+#ifndef __GA_UTILS_TEST_H__
+#define __GA_UTILS_TEST_H__
 
 
 #include <CUnit/CUnit.h>
 
 
-void registerEnvironmentTests();
+void registerUtilsTests();
 
 
 
-void testEvaluate();
-void testSelection();
-void testOnePointCrossover();
-void testMutation();
+void testGrayToBin();
+void testBinToGray();
+void testBinToGrayToBin();
 
 
-static CU_TestInfo test_env[] = {
-    { "testEvaluate", testEvaluate },
-    { "testSelection", testSelection },
-    { "testOnePointCrossover", testOnePointCrossover },
-    { "testMutation", testMutation },
+static CU_TestInfo test_utils[] = {
+    { "testGrayToBin", testGrayToBin },
+    { "testBinToGray", testBinToGray },
+    { "testBinToGrayToBin", testBinToGrayToBin },
     CU_TEST_INFO_NULL,
 };
 
-static CU_SuiteInfo env_suites[] = {
-    { "TestGAEnv", NULL, NULL, test_env },
+static CU_SuiteInfo utils_suites[] = {
+    { "TestGAUtils", NULL, NULL, test_utils },
     CU_SUITE_INFO_NULL,
 };
 

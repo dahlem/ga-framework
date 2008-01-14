@@ -94,20 +94,20 @@ void testSelection()
     pop.individuals[0].fitness = 1.0;
     pop.individuals[1].fitness = 1.0;
     
-/*     CU_ASSERT_EQUAL(selection(rng, &pop, &selected), 0); */
+    CU_ASSERT_EQUAL(selection(rng, &pop, &selected), 0);
 
-/*     for (i = 0; i < pop.size; ++i) { */
-/*         CU_ASSERT_TRUE( */
-/*             (cmpchromp( */
-/*                 &(pop.individuals[pop.size - 2]), */
-/*                 &(selected.individuals[i])) == 0) */
-/*             || */
-/*             (cmpchromp( */
-/*                 &(pop.individuals[pop.size - 1]), */
-/*                 &(selected.individuals[i])) == 0) */
-/*             ); */
-/*         CU_ASSERT_EQUAL(selected.individuals[i].fitness, 1); */
-/*     } */
+    for (i = 0; i < pop.size; ++i) {
+        CU_ASSERT_TRUE(
+            (cmpchromp(
+                &(pop.individuals[pop.size - 2]),
+                &(selected.individuals[i])) == 0)
+            ||
+            (cmpchromp(
+                &(pop.individuals[pop.size - 1]),
+                &(selected.individuals[i])) == 0)
+            );
+        CU_ASSERT_EQUAL(selected.individuals[i].fitness, 1);
+    }
 
     gsl_rng_free(rng);
 
@@ -121,7 +121,6 @@ void testOnePointCrossover()
     population_t pop, new;
     const gsl_rng_type *rng_type = gsl_rng_mt19937;
     gsl_rng *rng;
-    int i, j;
 
     gsl_rng_env_setup();
     rng = gsl_rng_alloc(rng_type);
@@ -135,9 +134,44 @@ void testOnePointCrossover()
     CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
     CU_ASSERT_EQUAL(selection(rng, &pop, &new), 0);
 
-/*     CU_ASSERT_EQUAL(recombine(rng, &new), 0); */
+    CU_ASSERT_EQUAL(recombine(rng, &new), 0);
 
     gsl_rng_free(rng);
     freePopulation(&new);
     freePopulation(&pop);
+}
+
+
+void testMutation()
+{
+    population_t pop, copy;
+    const gsl_rng_type *rng_type = gsl_rng_mt19937;
+    gsl_rng *rng;
+    int i, j;
+    long orig, new;
+
+    gsl_rng_env_setup();
+    rng = gsl_rng_alloc(rng_type);
+
+    pop.size = copy.size = 100;
+    pop.bits = copy.bits = 10;
+
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), 0);
+    CU_ASSERT_EQUAL(callocPopulation(&copy), 0);
+
+    CU_ASSERT_EQUAL(cpypop(&copy, &pop), 0);
+    
+    CU_ASSERT_EQUAL(mutate(rng, 1.0, &pop), 0);
+
+    for (i = 0; i < pop.size; ++i) {
+        for (j = 0; j < pop.bits; ++j) {
+            orig = pop.individuals[i].allele[j] * pow(2, j);
+            new = copy.individuals[i].allele[j] * pow(2, j);
+        }
+        CU_ASSERT_TRUE(orig != new);
+    }
+    
+    gsl_rng_free(rng);
+    freePopulation(&pop);
+    freePopulation(&copy);
 }

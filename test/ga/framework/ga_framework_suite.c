@@ -11,6 +11,7 @@
 
 #include "ga_environment_test.h"
 #include "ga_population_test.h"
+#include "ga_utils_test.h"
 
 
 int main(int argc, char* argv[])
@@ -20,6 +21,7 @@ int main(int argc, char* argv[])
         return CU_get_error();
     }
 
+    registerUtilsTests();
     registerPopulationTests();
     registerEnvironmentTests();
     

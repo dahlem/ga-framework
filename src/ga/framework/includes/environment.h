@@ -20,7 +20,7 @@
 #include "ga.h"
 
 
-int mutate(const gsl_rng *const rng, population_t *pop);
+int mutate(const gsl_rng *const rng, double rate, population_t *pop);
 
 int recombine(const gsl_rng *const rng, population_t *new);
 int onePointCrossover(const gsl_rng *const rng, population_t *new);

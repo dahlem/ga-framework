@@ -7,35 +7,36 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-
-#ifndef __GA_ENVIRONMENT_TEST_H__
-#define __GA_ENVIRONMENT_TEST_H__
+#include "utils.h"
 
 
-#include <CUnit/CUnit.h>
+void graytobinary(unsigned short *bin, unsigned short *gray, int n)
+{
+    int i;
+
+    /* copy the high-order bit */
+    *bin = *gray;               
+
+    /* XOR the remaining bits */
+    for (i = 0; i < n; ++i) {
+        bin--;
+        gray--;
+        *bin= *(bin + 1)^*gray;   
+    }
+}
 
 
-void registerEnvironmentTests();
+void binarytogray(unsigned short *bin, unsigned short *gray, int n)
+{
+    int i;
 
+    /* copy the high-order bit */
+    *gray = *bin;
 
-
-void testEvaluate();
-void testSelection();
-void testOnePointCrossover();
-void testMutation();
-
-
-static CU_TestInfo test_env[] = {
-    { "testEvaluate", testEvaluate },
-    { "testSelection", testSelection },
-    { "testOnePointCrossover", testOnePointCrossover },
-    { "testMutation", testMutation },
-    CU_TEST_INFO_NULL,
-};
-
-static CU_SuiteInfo env_suites[] = {
-    { "TestGAEnv", NULL, NULL, test_env },
-    CU_SUITE_INFO_NULL,
-};
-
-#endif
+    /* XOR the remaining bits */
+    for (i = 0; i < n; ++i) {
+        gray--;
+        bin--;
+        *gray= *(bin + 1)^*bin;
+    }
+}

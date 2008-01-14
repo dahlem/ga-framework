@@ -20,6 +20,9 @@
 #include "ga.h"
 
 
+
+double cumulativeFitness(population_t *pop);
+
 int mutate(const gsl_rng *const rng, double rate, population_t *pop);
 
 int recombine(const gsl_rng *const rng, population_t *new);

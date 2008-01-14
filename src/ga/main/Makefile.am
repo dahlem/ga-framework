@@ -8,21 +8,21 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-noinst_LTLIBRARIES = libgaframework.la
+bin_PROGRAMS = gamain
 
-libgaframework_la_SOURCES =                                           \
-	utils.c                                                       \
-	environment.c                                                 \
-	population.c
+gamain_SOURCES =                                                      \
+	ga-debug.c                                                    \
+	ga-cl.c                                                       \
+	main.c
 
-libgaframework_la_CPPFLAGS = -I./includes
+gamain_CPPFLAGS =                                                     \
+	-I./includes                                                  \
+	-I$(top_srcdir)/src/ga/framework/includes
+
 
 LDADD =                                                               \
-	-lgsl                                                         \
-	-lm
+	$(top_srcdir)/src/ga/framework/libgaframework.la                    
+
 
 include_HEADERS = includes
-
-# compile with mpi
-CC = $(MPICC)
-LIBS += $(MPILIBS)
+MAINTAINERCLEANFILES = Makefile.in

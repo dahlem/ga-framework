@@ -10,6 +10,7 @@
 #include "utils.h"
 
 
+
 void graytobinary(unsigned short *bin, unsigned short *gray, int n)
 {
     int i;
@@ -29,7 +30,7 @@ void binarytogray(unsigned short *bin, unsigned short *gray, int n)
     int i;
 
     /* copy the high-order bit */
-    gray[n - 1] = bin [n - 1];
+    gray[n - 1] = bin[n - 1];
 
     /* XOR the remaining bits */
     for (i = (n - 2); i >= 0; i--) {

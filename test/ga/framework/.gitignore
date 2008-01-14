@@ -2,3 +2,4 @@
 /ga_framework_test-ga_environment_test.o
 /ga_framework_test-ga_framework_suite.o
 /ga_framework_test-ga_population_test.o
+/ga_framework_test-ga_utils_test.o

@@ -7,25 +7,15 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-/**
- * Declaration of debug methods.
- *
- * @author Dominik Dahlem (ID: 02175321)
- */
-#ifndef __GA_DEBUG_H__
-#define __GA_DEBUG_H__
+#include <stdio.h>
+
+#include "environment.h"
+#include "ga-debug.h"
 
 
 
-/**
- * This function prints the lattice into the console.
- *
- * @param const char* the title of the output 
- * @param double** the 2D lattice
- * @param int the number of rows
- * @param int the number of columns
- */
-void printChromosome(const char *title, double **lattice, int r, int c);
-
-
-#endif /* GA_DEBUG_H */
+void printPop(const population_t *pop)
+{
+    printf("Cumulative Fitness: ");
+    printf("%f\n", cumulativeFitness(pop));
+}

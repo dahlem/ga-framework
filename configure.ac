@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([562 - Assignment 4],
-        [0.1],
+        [0.3],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie], 
         [GA-framework])
 
@@ -117,6 +117,7 @@ AC_CONFIG_FILES([
    src/Makefile
    src/ga/Makefile
    src/ga/framework/Makefile
+   src/ga/main/Makefile
    test/Makefile
    test/ga/Makefile
    test/ga/framework/Makefile

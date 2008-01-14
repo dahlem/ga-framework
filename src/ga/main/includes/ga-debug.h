@@ -7,26 +7,20 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include "config.h"
+/**
+ * Declaration of debug methods.
+ *
+ * @author Dominik Dahlem (ID: 02175321)
+ */
+#ifndef __GA_DEBUG_H__
+#define __GA_DEBUG_H__
 
-#include <stdio.h>
-
-#include "ga-debug.h"
 
 
+/**
+ * This function prints statistics about population values.
+ */
+void printPop(const population_t *pop);
 
-void printChromosome(const char *title, double **lattice, int r, int c) 
-{
-#ifdef NDEBUG
-    int i, j;
-    
-    printf("%s\n", title);
-    for (i = 0; i < r; ++i) {
-        for (j = 0; j < c; ++j) {
-            printf("%2.0f  ", lattice[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-#endif /* NDEBUG */
-}
+
+#endif /* GA_DEBUG_H */

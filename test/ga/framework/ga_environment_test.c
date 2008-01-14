@@ -190,6 +190,7 @@ void testSurvive()
     CU_ASSERT_EQUAL(recombine(rng_test, &new), 0);
     CU_ASSERT_EQUAL(mutate(rng_test, 0.06, &new), 0);
 
+    CU_ASSERT_EQUAL(evaluate(&new, &fitness), 0);
     CU_ASSERT_EQUAL(survive(&pop, &new), 0);
 
     freePopulation(&pop);

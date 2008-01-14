@@ -19,12 +19,16 @@ void registerPopulationTests();
 
 
 
+void testCpypop();
+void testCpychrom();
 void testPopsizeUnspecified();
 void testBitsUnspecified();
 void testInit();
 
 
 static CU_TestInfo test_pop[] = {
+    { "testCpychrom", testCpychrom },
+    { "testCpypop", testCpypop },
     { "testPopsizeUnspecified", testPopsizeUnspecified },
     { "testBitsUnspecified", testBitsUnspecified },
     { "testInit", testInit },

@@ -29,6 +29,73 @@ void registerPopulationTests()
 }
 
 
+void testCpypop()
+{
+    population_t pop, dest;
+    int i, j;
+
+    pop.size = dest.size = 5;
+    pop.bits = dest.bits = 10;
+    
+    pop.individuals = malloc(5 * sizeof(chromosome_t));
+    dest.individuals = malloc(5 * sizeof(chromosome_t));
+
+    for (i = 0; i < 5; ++i){
+        pop.individuals[i].allele = malloc(10 * sizeof(unsigned short));
+        dest.individuals[i].allele = calloc(10, sizeof(unsigned short));
+    }
+
+    for (i = 0; i < 5; ++i) {
+        for (j = 0; j < 10; ++j) {
+            pop.individuals[i].allele[j] = 1;
+        }
+    }
+    
+    CU_ASSERT_EQUAL(cpypop(&dest, &pop), 0);
+    CU_ASSERT_EQUAL(pop.size, dest.size);
+    CU_ASSERT_EQUAL(pop.bits, dest.bits);
+
+    for (i = 0; i < 5; ++i) {
+        for (j = 0; j < 10; ++j) {
+            CU_ASSERT_TRUE(dest.individuals[i].allele[j] == 1);
+        }
+    }
+    
+    for (i = 0; i < 5; ++i){
+        free(pop.individuals[i].allele);
+        free(dest.individuals[i].allele);
+    }
+
+    free(pop.individuals);
+    free(dest.individuals);
+}
+
+
+void testCpychrom()
+{
+    chromosome_t src, dest;
+    int i;
+
+    src.fitness = 10;
+    src.allele = malloc(10 * sizeof(unsigned short));
+    dest.allele = calloc(10, sizeof(unsigned short));
+
+    for (i = 0; i < 10; ++i) {
+        src.allele[i] = 1;
+    }
+    
+    CU_ASSERT_EQUAL(cpychrom(&dest, &src, 10), 0);
+    CU_ASSERT_TRUE(src.fitness == dest.fitness);
+
+    for (i = 0; i < 10; ++i) {
+        CU_ASSERT_EQUAL(dest.allele[i], 1);
+    }
+
+    free(src.allele);
+    free(dest.allele);
+}
+
+
 void testPopsizeUnspecified()
 {
     population_t pop;
@@ -41,7 +108,7 @@ void testPopsizeUnspecified()
     pop.size = 0;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), POPSIZE_UNSPECIFIED);
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), GA_POPSIZE_UNSPECIFIED);
     
     gsl_rng_free(rng);
 }
@@ -59,7 +126,7 @@ void testBitsUnspecified()
     pop.size = 10;
     pop.bits = 0;
     
-    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), BITS_UNSPECIFIED);
+    CU_ASSERT_EQUAL(rallocPopulation(rng, &pop), GA_BITS_UNSPECIFIED);
 
     gsl_rng_free(rng);
 }

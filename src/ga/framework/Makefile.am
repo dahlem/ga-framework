@@ -17,9 +17,8 @@ libgaframework_la_SOURCES =                                           \
 
 libgaframework_la_CPPFLAGS = -I./includes
 
-LDADD =                                                               \
-	-lgsl                                                         \
-	-lm
+libgaframework_la_LIBADD =                                            \
+	$(GSL_LIBS)
 
 include_HEADERS = includes
 

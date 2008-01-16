@@ -12,12 +12,15 @@
 #define __GA_SETUP_H__
 
 
+#ifdef HAVE_LIBGSL
+
 #include <gsl/gsl_rng.h>
 
 
 static gsl_rng_type *rng_type_test = NULL;
 static gsl_rng *rng_test = NULL;
 
+#endif /* HAVE_LIBGSL */
 
 
 #endif

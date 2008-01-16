@@ -1,0 +1,12 @@
+#!/bin/sh
+#PBS -l walltime=00:02:00
+#PBS -q parallel
+#PBS -l cput=00:02:00
+#PBS -l nodes=2:ppn=1
+
+cat $PBS_NODEFILE
+cd $HOME/hpc/562/assignment4
+
+mpiexec ./src/ga/main/gamain -g 10 -s 10 -c 10
+
+echo "Done"

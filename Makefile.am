@@ -35,6 +35,7 @@ dist-hook:
 
 EXTRA_DIST = \
 	$(srcdir)/coverage \
+	$(srcdir)/ga-2.pbs \
 	$(srcdir)/m4/ac_gcov.m4 \
 	$(srcdir)/mk/gcov.am \
 	$(srcdir)/mk/gcov-recursive.am \

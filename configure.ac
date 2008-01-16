@@ -16,8 +16,8 @@ AC_INIT([562 - Assignment 4],
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADER([config.h])
 
+AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([foreign])
 
 
@@ -52,9 +52,17 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([gettimeofday memset])
 
 # GSL library checks
-AC_CHECK_LIB([m],[cos])
-AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+# enable gsl?
+AC_ARG_ENABLE(gsl, AS_HELP_STRING(
+		     [--enable-gsl], 
+		     [enable test @<:@default=no@:>@]), 
+		     [GSLLIB=$enableval], [GSLLIB=no])
 
+if test x$GSLLIB = xyes; then
+   AC_CHECK_LIB([m],[cos])
+   AC_CHECK_LIB([gslcblas],[cblas_dgemm])
+   AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+fi
 
 # enable cunit?
 AC_ARG_ENABLE(test, AS_HELP_STRING(
@@ -65,7 +73,8 @@ AC_ARG_ENABLE(test, AS_HELP_STRING(
 # Check for cunit
 if test x$TESTING = xyes; then
    AC_CHECK_LIB(cunit, CU_initialize_registry, HAVE_CUNIT="yes")
-   
+   AC_CHECK_FUNCS([pow])
+
    if test x$HAVE_CUNIT != xyes; then
 	AC_MSG_WARN([CUnit not found. Tests cannot be run.])
    fi

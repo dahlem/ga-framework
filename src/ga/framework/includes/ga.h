@@ -16,23 +16,47 @@
 #define __GA_H__
 
 
+/**
+ * @defgroup Errors
+ * @{
+ */
+/**
+ * Error if the population size is not specified
+ */
 #define GA_POPSIZE_UNSPECIFIED      11
+
+/**
+ * Error if the number of bits are not specified
+ */
 #define GA_BITS_UNSPECIFIED         12
+
+/**
+ * Error if memory allocation was not successful
+ */
 #define GA_MALLOC_UNSUCCESSFUL      13
 
+/** @}*/
 
 
+
+/**
+ * A structure to capture information about a chromosome.
+ */
 typedef struct
 {
-    unsigned short *allele;
-    double fitness;
+    unsigned short *allele; /* the alleles (bits) of the chromosome */
+    double fitness; /* the fitness of the chromosome */
 } chromosome_t;
 
+
+/**
+ * A structure to capture information about a population.
+ */
 typedef struct
 {
-    chromosome_t *individuals;
-    int bits;
-    int size;
+    chromosome_t *individuals; /* array of chromosomes */
+    int bits; /* the number of bits represented within the chromosomes */
+    int size; /* the size of the population */
 } population_t;
 
 

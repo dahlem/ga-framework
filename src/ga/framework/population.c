@@ -7,7 +7,13 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include "config.h"
+
 #include <stdlib.h>
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "population.h"
 
@@ -62,10 +68,14 @@ int cmpchromp(const void *p1, const void *p2)
 }
 
 
+#ifdef HAVE_LIBGSL
 int rallocPopulation(const gsl_rng *const rng, population_t *pop)
+#else
+int rallocPopulation(population_t *pop)
+#endif
 {
     int i, j;
-    
+
     if (pop->size <= 0) {
         return GA_POPSIZE_UNSPECIFIED;
     }
@@ -90,8 +100,13 @@ int rallocPopulation(const gsl_rng *const rng, population_t *pop)
 
         for (j = 0; j < pop->bits; ++j) {
             /* generate a random integer [0, 1] */
+#ifdef HAVE_LIBGSL
             (pop->individuals[i]).allele[j] =
                 (unsigned short) gsl_rng_uniform_int(rng, 2);
+#else
+            (pop->individuals[i]).allele[j] =
+                (unsigned short) (lrand48() % 2);
+#endif
         }
     }
     
@@ -101,7 +116,7 @@ int rallocPopulation(const gsl_rng *const rng, population_t *pop)
 
 int callocPopulation(population_t *pop)
 {
-    int i, j;
+    int i;
     
     if (pop->size <= 0) {
         return GA_POPSIZE_UNSPECIFIED;
@@ -131,7 +146,7 @@ int callocPopulation(population_t *pop)
 
 int freePopulation(population_t *pop)
 {
-    int i, j;
+    int i;
     
     if (pop->size <= 0) {
         return 0;

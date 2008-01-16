@@ -7,11 +7,16 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <CUnit/CUnit.h>
-#include <gsl/gsl_rng.h>
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "environment.h"
 #include "ga.h"
@@ -50,6 +55,7 @@ void registerEnvironmentTests()
 
 int init_env()
 {
+#ifdef HAVE_LIBGSL
     rng_type_test = gsl_rng_mt19937;
     rng_test = gsl_rng_alloc(rng_type_test);
 
@@ -58,12 +64,19 @@ int init_env()
     } else {
         return 0;
     }
+#else
+    return 0;
+#endif
 }
 
 
 int clean_env()
 {
+#ifdef HAVE_LIBGSL
     gsl_rng_free(rng_test);
+#endif
+
+    return 0;
 }
 
 
@@ -75,7 +88,11 @@ void testEvaluate()
     pop.size = 10;
     pop.bits = 10;
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+#endif
 
     CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
 
@@ -100,12 +117,20 @@ void testSelection()
     selected.bits = 10;
 
     CU_ASSERT_EQUAL(callocPopulation(&selected), 0);
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+#endif
 
     pop.individuals[0].fitness = 1.0;
     pop.individuals[1].fitness = 1.0;
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(selection(rng_test, &pop, &selected), 0);
+#else
+    CU_ASSERT_EQUAL(selection(&pop, &selected), 0);
+#endif
 
     for (i = 0; i < pop.size; ++i) {
         CU_ASSERT_TRUE(
@@ -133,12 +158,22 @@ void testOnePointCrossover()
     pop.bits = new.bits = 10;
 
     CU_ASSERT_EQUAL(callocPopulation(&new), 0);
+
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
     
     CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
     CU_ASSERT_EQUAL(selection(rng_test, &pop, &new), 0);
 
     CU_ASSERT_EQUAL(recombine(rng_test, &new), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+    
+    CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
+    CU_ASSERT_EQUAL(selection(&pop, &new), 0);
+
+    CU_ASSERT_EQUAL(recombine(&new), 0);
+#endif
 
     freePopulation(&new);
     freePopulation(&pop);
@@ -151,15 +186,25 @@ void testMutation()
     int i, j;
     long orig, new;
 
+    orig = new = 0;
     pop.size = copy.size = 100;
     pop.bits = copy.bits = 10;
 
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+#endif
+
     CU_ASSERT_EQUAL(callocPopulation(&copy), 0);
 
     CU_ASSERT_EQUAL(cpypop(&copy, &pop), 0);
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(mutate(rng_test, 1.0, &pop), 0);
+#else
+    CU_ASSERT_EQUAL(mutate(1.0, &pop), 0);
+#endif
 
     for (i = 0; i < pop.size; ++i) {
         for (j = 0; j < pop.bits; ++j) {
@@ -181,6 +226,7 @@ void testSurvive()
     pop.size = new.size = 10;
     pop.bits = new.bits = 100;
 
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
     CU_ASSERT_EQUAL(callocPopulation(&new), 0);
     
@@ -189,6 +235,16 @@ void testSurvive()
 
     CU_ASSERT_EQUAL(recombine(rng_test, &new), 0);
     CU_ASSERT_EQUAL(mutate(rng_test, 0.06, &new), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+    CU_ASSERT_EQUAL(callocPopulation(&new), 0);
+    
+    CU_ASSERT_EQUAL(evaluate(&pop, &fitness), 0);
+    CU_ASSERT_EQUAL(selection(&pop, &new), 0);
+
+    CU_ASSERT_EQUAL(recombine(&new), 0);
+    CU_ASSERT_EQUAL(mutate(0.06, &new), 0);
+#endif
 
     CU_ASSERT_EQUAL(evaluate(&new, &fitness), 0);
     CU_ASSERT_EQUAL(survive(&pop, &new), 0);

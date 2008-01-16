@@ -7,8 +7,13 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include "config.h"
+
 #include <CUnit/Basic.h>
-#include <gsl/gsl_rng.h>
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "ga_environment_test.h"
 #include "ga_population_test.h"
@@ -22,7 +27,9 @@ int main(int argc, char* argv[])
         return CU_get_error();
     }
 
+#ifdef HAVE_LIBGSL
     gsl_rng_env_setup();
+#endif
 
     registerUtilsTests();
     registerPopulationTests();

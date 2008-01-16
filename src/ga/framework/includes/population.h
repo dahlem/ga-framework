@@ -15,12 +15,19 @@
 #ifndef __POPULATION_H__
 #define __POPULATION_H__
 
-#include <gsl/gsl_rng.h>
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "ga.h"
 
 
+#ifdef HAVE_LIBGSL
 int rallocPopulation(const gsl_rng *const rng, population_t *pop);
+#else
+int rallocPopulation(population_t *pop);
+#endif
+
 int callocPopulation(population_t *pop);
 int freePopulation(population_t *pop);
 

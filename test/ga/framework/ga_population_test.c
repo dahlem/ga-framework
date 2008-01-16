@@ -7,11 +7,16 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <CUnit/CUnit.h>
-#include <gsl/gsl_rng.h>
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "ga.h"
 #include "population.h"
@@ -32,6 +37,7 @@ void registerPopulationTests()
 
 int init_pop()
 {
+#ifdef HAVE_LIBGSL
     rng_type_test = gsl_rng_mt19937;
     rng_test = gsl_rng_alloc(rng_type_test);
 
@@ -40,12 +46,19 @@ int init_pop()
     } else {
         return 0;
     }
+#else
+    return 0;
+#endif
 }
 
 
 int clean_pop()
 {
+#ifdef HAVE_LIBGSL
     gsl_rng_free(rng_test);
+#endif
+    
+    return 0;
 }
 
 
@@ -123,7 +136,11 @@ void testPopsizeUnspecified()
     pop.size = 0;
     pop.bits = 0;
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), GA_POPSIZE_UNSPECIFIED);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), GA_POPSIZE_UNSPECIFIED);
+#endif
 }
 
 
@@ -134,7 +151,11 @@ void testBitsUnspecified()
     pop.size = 10;
     pop.bits = 0;
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), GA_BITS_UNSPECIFIED);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), GA_BITS_UNSPECIFIED);
+#endif
 }
 
 
@@ -146,12 +167,15 @@ void testInit()
     pop.size = 10;
     pop.bits = 10;
     
+#ifdef HAVE_LIBGSL
     CU_ASSERT_EQUAL(rallocPopulation(rng_test, &pop), 0);
+#else
+    CU_ASSERT_EQUAL(rallocPopulation(&pop), 0);
+#endif
 
     for (i = 0; i < pop.size; ++i) {
         for (j = 0; j < pop.bits; ++j) {
             CU_ASSERT_TRUE(pop.individuals[i].allele[j] <= 1);
-            CU_ASSERT_TRUE(pop.individuals[i].allele[j] >= 0);
         }
     }
     

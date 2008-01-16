@@ -7,22 +7,60 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
+#include "config.h"
+
+#ifdef HAVE_MPI
+# include <mpi.h>
+# include <string.h>
+# include <limits.h>
+# define KILL_PILL USHRT_MAX
+#endif /* HAVE_MPI */
+
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "population.h"
 #include "environment.h"
 #include "utils.h"
 
 
+#ifdef HAVE_MPI
 
-int selection(const gsl_rng *const rng, population_t *pop, population_t *selected)
+typedef struct 
 {
+    unsigned short *allele;
+    double fitness;
+    int number;
+} individual_t;
+
+#endif
+
+
+
+#ifdef HAVE_LIBGSL
+int selection(const gsl_rng *const rng, population_t *pop, population_t *selected)
+#else
+int selection(population_t *pop, population_t *selected)
+#endif
+{
+#ifdef HAVE_LIBGSL
     return rws(rng, pop, selected);
+#else
+    return rws(pop, selected);
+#endif
 }
 
 
+#ifdef HAVE_LIBGSL
 int mutate(const gsl_rng *const rng, double rate, population_t *pop)
+#else
+int mutate(double rate, population_t *pop)
+#endif
 {
     unsigned short *gray_code;
     int i, j;
@@ -38,9 +76,14 @@ int mutate(const gsl_rng *const rng, double rate, population_t *pop)
         isConverted = false;
 
         for (j = 0; j < pop->bits; ++j) {
+            
             /* mutate a single bit */
+#ifdef HAVE_LIBGSL
             u = gsl_rng_uniform(rng);
-
+#else
+            u = drand48();
+#endif
+            
             /* if the random number is smaller than the mutation rate */
             if (u <= rate) {
                 /* lazy convert the binary chromosome to the gray representation */
@@ -72,13 +115,25 @@ int mutate(const gsl_rng *const rng, double rate, population_t *pop)
 }
 
 
+#ifdef HAVE_LIBGSL
 int recombine(const gsl_rng *const rng, population_t *new)
+#else
+int recombine(population_t *new)
+#endif
 {
+#ifdef HAVE_LIBGSL
     return onePointCrossover(rng, new);
+#else
+    return onePointCrossover(new);
+#endif
 }
 
 
+#ifdef HAVE_LIBGSL
 int onePointCrossover(const gsl_rng *const rng, population_t *new)
+#else
+int onePointCrossover(population_t *new)
+#endif
 {
     int i, j;
     int cut_off;
@@ -87,7 +142,11 @@ int onePointCrossover(const gsl_rng *const rng, population_t *new)
     for (i = 0; i < (new->size - 1); i += 2) {
         /* the cross-over point has to be between 1 and bits-1,
            otherwise there won't be a cross over at all. */
+#ifdef HAVE_LIBGSL
         cut_off = gsl_rng_uniform_int(rng, new->bits - 2) + 1;
+#else
+        cut_off = (lrand48() % (new->bits - 2)) + 1;
+#endif
 
         for (j = cut_off; j < new->bits; ++j) {
             temp = (new->individuals[i]).allele[j];
@@ -100,15 +159,116 @@ int onePointCrossover(const gsl_rng *const rng, population_t *new)
 }
 
 
+#ifdef HAVE_MPI
+void master(population_t *pop) 
+{
+    int i;
+    int size;
+    int jobs;
+    unsigned short *individual;
+    MPI_Status status;
+    double result;
+
+    individual = calloc(pop->bits, sizeof(unsigned short));
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    jobs = 0;
+        
+    for (i = 1; i < size; ++i) {
+        /* Initial jobs */
+        memcpy(individual, pop->individuals[jobs].allele,
+               pop->bits * sizeof(unsigned short));
+
+        MPI_Send(individual, MPI_UNSIGNED_SHORT, pop->bits, i, jobs, MPI_COMM_WORLD);
+        jobs++;
+    }
+
+    while (jobs < pop->size) {
+        MPI_Recv(&result, MPI_DOUBLE, 1, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                 MPI_COMM_WORLD, &status);
+
+        pop->individuals[status.MPI_TAG].fitness = result;
+        
+        memcpy(individual, pop->individuals[jobs].allele,
+               pop->bits * sizeof(unsigned short));
+
+        MPI_Send(individual, MPI_UNSIGNED_SHORT, pop->bits, status.MPI_SOURCE,
+                 jobs, MPI_COMM_WORLD);
+
+        jobs++;
+    }
+
+    for(i = 1; i < size; ++i) {
+        MPI_Recv(&result, MPI_DOUBLE, 1, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                 MPI_COMM_WORLD, &status);
+
+        pop->individuals[status.MPI_TAG].fitness = result;        
+
+        /* Send no more jobs */
+        MPI_Send(0, 0, MPI_UNSIGNED_SHORT, i, KILL_PILL, MPI_COMM_WORLD);
+    }
+
+    free(individual);
+}
+
+
+void slave(double (*fitnessFuncPtr)(unsigned short*, int), int bits)
+{
+    int rank;
+    
+    unsigned short *individual;
+    MPI_Status status;
+    double fit;
+
+    individual = calloc(bits, sizeof(unsigned short));
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    while(1) {
+        MPI_Recv(individual, MPI_UNSIGNED_SHORT, bits, 0, MPI_ANY_TAG,
+                 MPI_COMM_WORLD, &status);
+
+        if (status.MPI_TAG == KILL_PILL) {
+            break;
+        }
+
+        /* calculate the fitness */
+        fit = fitnessFuncPtr(individual, bits);
+            
+        /* Send fitness value back */
+        MPI_Send(&fit, MPI_DOUBLE, 1, 0, status.MPI_TAG, MPI_COMM_WORLD);
+    }
+
+    free(individual);
+}
+#endif /* HAVE_MPI */
+
+
 int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int))
 {
+#ifdef HAVE_MPI
+    int rank;
+
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    switch (rank) {
+      case 0:
+          master(pop);
+          break;
+      default:
+          slave(fitnessFuncPtr, pop->bits);
+          break;
+    }
+#else
     int i;
 
     for (i = 0; i < pop->size; ++i) {
         (pop->individuals[i]).fitness = fitnessFuncPtr(
             (pop->individuals[i]).allele, pop->bits);
     }
-
+#endif
+    
     return 0;
 }
 
@@ -126,7 +286,11 @@ double cumulativeFitness(population_t *pop)
     return cumulative_fitness;
 }
 
+#ifdef HAVE_LIBGSL
 int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
+#else
+int rws(population_t *pop, population_t *selected)
+#endif
 {
     double cumulative_fitness;
     double cumulative_probability;
@@ -157,7 +321,12 @@ int rws(const gsl_rng *const rng, population_t *pop, population_t *selected)
     }
 
     for (k = 0; k < pop->size; ++k) {
+
+#ifdef HAVE_LIBGSL
         u = gsl_rng_uniform(rng);
+#else
+        u = drand48();
+#endif
 
         for (i = pop->size - 2; i >= 0; i--) {
             if ((cumulative_probabilities[i] < u)
@@ -193,4 +362,6 @@ int survive(population_t *pop, population_t *new)
             return 0;
         }
     }
+
+    return 0;
 }

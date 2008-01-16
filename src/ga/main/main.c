@@ -16,7 +16,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <gsl/gsl_rng.h>
+#ifdef HAVE_LIBGSL
+# include <gsl/gsl_rng.h>
+#endif
 
 #include "environment.h"
 #include "ga.h"
@@ -45,30 +47,51 @@ double fitness(unsigned short *allele, int bits)
 int main(int argc, char *argv[])
 {
     population_t pop, selected;
+#ifdef HAVE_LIBGSL
     const gsl_rng_type *rng_type = gsl_rng_mt19937;
     gsl_rng *rng;
+#endif
     int i;
+
+#ifdef HAVE_MPI
+    MPI_Init(&argc, &argv);
+#endif /* HAVE_MPI */
 
     /* initialise and configure the command line options */
     init();
     process_cl(argc, argv);
+
+#ifdef HAVE_LIBGSL
     gsl_rng_env_setup();
     rng = gsl_rng_alloc(rng_type);
-
+#else
+    srand48(12345);
+#endif
 
     pop.size = selected.size = globalArgs.population_size;
     pop.bits = selected.bits = globalArgs.chromosome_bits;
 
+#ifdef HAVE_LIBGSL
     rallocPopulation(rng, &pop);
+#else
+    rallocPopulation(&pop);
+#endif
+
     callocPopulation(&selected);
     
     evaluate(&pop, &fitness);
 
     for (i = 0; i < globalArgs.generations; ++i) {
-        selection(rng, &pop, &selected);
 
+#ifdef HAVE_LIBGSL
+        selection(rng, &pop, &selected);
         recombine(rng, &selected);
         mutate(rng, globalArgs.mutation_rate, &selected);
+#else
+        selection(&pop, &selected);
+        recombine(&selected);
+        mutate(globalArgs.mutation_rate, &selected);
+#endif
         evaluate(&selected, &fitness);
 
         survive(&pop, &selected);
@@ -81,7 +104,13 @@ int main(int argc, char *argv[])
     freePopulation(&pop);
     freePopulation(&selected);
 
+#ifdef HAVE_LIBGSL
     gsl_rng_free(rng);
+#endif
     
+#ifdef HAVE_MPI
+    MPI_Finalize();
+#endif /* HAVE_MPI */
+
     return EXIT_SUCCESS;
 }

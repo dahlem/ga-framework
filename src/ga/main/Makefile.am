@@ -21,8 +21,13 @@ gamain_CPPFLAGS =                                                     \
 
 
 LDADD =                                                               \
-	$(top_srcdir)/src/ga/framework/libgaframework.la                    
+	$(top_srcdir)/src/ga/framework/libgaframework.la              \
+	$(GSL_LIBS)
 
 
 include_HEADERS = includes
 MAINTAINERCLEANFILES = Makefile.in
+
+# compile with mpi
+CC = $(MPICC)
+LIBS += $(MPILIBS)

@@ -43,7 +43,9 @@
      number generator, GSL can be used instead. Initially, GSL was
      used as default, but then it was discovered that the lab
      computers don't have the gsl libraries installed. I decided to
-     keep GSL as an option anyway.
+     keep GSL as an option anyway. If GSL is not enabled the random
+     seed for the default drand48/lrand48 functions can be set via the
+     command-line.
 
 3) Make
  * Installing the application was not considered. 
@@ -90,13 +92,13 @@
  * The coverage report based on lcov/gcov is supplied in the coverage folder.
 
    - coverage
-      - html
+      - lcov-reports/html
 
 5) Remarks on the approach
  * The application accepts a number of command-line arguments (see
    help output) to configure the number of generations, the size of
-   the population, the number of bits representing a chromosome, and
-   the mutation rate.
+   the population, the number of bits representing a chromosome, the
+   mutation rate, and the seed for the *rand48 functions.
 
  * The command-line arguments are parsed with getopt and verified once
    they are parsed. The verification ensures that the ranges of the
@@ -107,3 +109,17 @@
    arrays. I've chosen this approach, because I considered splitting
    the chromosome up into possibly two or more ints/longs as too
    awkward to process.
+
+ * I implemented a binary-to-gray code conversion and vice-versa. The
+   gray code conversion provides the "adjacency property" to the
+   mutation operation. That means that a single bit mutation results
+   in adjacent integer numbers in the binary representation. In
+   contrast successive integers are usually many bit flips away in the
+   binary representation. Additionally, mutations on the gray code
+   representation allows the numbers to roll over from 0 to the
+   highest number (vice-versa). Hollstien [1] investigated this
+   property in his PhD thesis.
+
+6) Bibliography
+[1] R. Hollstien, Artificial Genetic Adaptation in Computer Control
+    Systems, PhD, University of Michigan, 1971.

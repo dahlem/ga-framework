@@ -148,7 +148,6 @@ int onePointCrossover(population_t *new)
 #else
         cut_off = (lrand48() % (new->bits - 2)) + 1;
 #endif
-        printf("cutoff: %d\n", cut_off);
 
         for (j = cut_off; j < new->bits; ++j) {
             temp = (new->individuals[i]).allele[j];

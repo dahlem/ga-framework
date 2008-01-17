@@ -22,7 +22,7 @@
  * Arguments p, e, and m are passed in by the MPI environment, we ignore
  * those, but the have to be specified.
  */
-static const char *cl_arguments = "uh?r:g:s:c:p:e:m:";
+static const char *cl_arguments = "uh?r:g:s:c:p:e:m:d:";
 
 
 
@@ -34,6 +34,7 @@ void displayHelp()
     printf(" -g : The number of generations.\n");
     printf(" -s : The size of the population.\n");
     printf(" -c : The number of bits in the chromosomes.\n");
+    printf(" -d : The random number seed for the srand48 function.\n");
     printf(" -? : This help message.\n");
     printf(" -h : This help message.\n");
 
@@ -47,6 +48,7 @@ void init()
     globalArgs.generations = DEFAULT_GENERATIONS;
     globalArgs.population_size = DEFAULT_POPULATION_SIZE;
     globalArgs.chromosome_bits = DEFAULT_CHROMOSOME_BITS;
+    globalArgs.seed = DEFAULT_SEED;
 }
 
 
@@ -73,6 +75,10 @@ void verify_cl()
         fprintf(stderr, "Error: The size of the population has to be >= 1.\n\n");
         displayHelp();
     }
+    if (globalArgs.seed < 1) {
+        fprintf(stderr, "Error: The random number seed has to be >= 1.\n\n");
+        displayHelp();
+    }
 }
 
 
@@ -95,6 +101,9 @@ void process_cl(int argc, char **argv)
                 break;
             case 'c':
                 globalArgs.chromosome_bits = atoi(optarg);
+                break;
+            case 'd':
+                globalArgs.seed = atol(optarg);
                 break;
             case 'p':
                 break;

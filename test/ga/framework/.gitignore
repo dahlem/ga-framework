@@ -1,5 +1,13 @@
 /ga_framework_test
+/ga_framework_test-ga_environment_test.gcda
+/ga_framework_test-ga_environment_test.gcno
 /ga_framework_test-ga_environment_test.o
+/ga_framework_test-ga_framework_suite.gcda
+/ga_framework_test-ga_framework_suite.gcno
 /ga_framework_test-ga_framework_suite.o
+/ga_framework_test-ga_population_test.gcda
+/ga_framework_test-ga_population_test.gcno
 /ga_framework_test-ga_population_test.o
+/ga_framework_test-ga_utils_test.gcda
+/ga_framework_test-ga_utils_test.gcno
 /ga_framework_test-ga_utils_test.o

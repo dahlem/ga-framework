@@ -7,32 +7,32 @@
 /* This program is distributed in the hope that it will be useful, but         */
 /* WITHOUT ANY WARRANTY, to the extent permitted by law; without even the      */
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
-#include <stdio.h>
-
-#include "ga.h"
-#include "ga-debug.h"
-
-
-void printChromosome(const unsigned short *allele, int bits)
-{
-    int i;
-
-    for (i = 0; i < bits; ++i) {
-        printf("%d", allele[i]);
-    }
-    printf("\n");
-}
+/**
+ * Declaration of debug methods.
+ *
+ * @author Dominik Dahlem (ID: 02175321)
+ */
+#ifndef __GA_DEBUG_H__
+#define __GA_DEBUG_H__
 
 
-void printPop(const char *title, population_t *pop)
-{
-    int i;
 
-    printf("%s:\n", title);
+/**
+ * This function prints the chromosome of an individual.
+ *
+ * @param const unsigned short* the individual to be printed
+ * @param int the number of bits in the chromosome
+ */
+void printChromosome(const unsigned short *allele, int bits);
 
-    for (i = 0; i < pop->size; ++i) {
-        printChromosome(pop->individuals[i].allele, pop->bits);
-    }
 
-    printf("%s done\n", title);
-}
+/**
+ * Print the population.
+ *
+ * @param const char* the title of the print out
+ * @param population_t* the population to be printed
+ */
+void printPop(const char *title, population_t *pop);
+
+
+#endif /* GA_DEBUG_H */

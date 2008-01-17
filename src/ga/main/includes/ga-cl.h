@@ -42,6 +42,11 @@
  */
 #define DEFAULT_CHROMOSOME_BITS 50
 
+/**
+ * Default seed
+ */
+#define DEFAULT_SEED 2389438
+
 /** @}*/
 
 
@@ -54,6 +59,7 @@ struct globalArgs_t {
     int generations; /* number of iterations */
     int population_size; /* population size */
     int chromosome_bits; /* number of bits for the chromosomes */
+    long seed; /* seed of the random number generator */
 } globalArgs;
 
 

@@ -132,7 +132,7 @@ int callocPopulation(population_t *pop)
         return GA_MALLOC_UNSUCCESSFUL;
     }
 
-    /* allocate the bits for each individual and set to a random bit */
+    /* allocate the bits for each individual and set the bits to 0 */
     for (i = 0; i < pop->size; ++i) {
         if (((pop->individuals[i]).allele
              = calloc(pop->bits, sizeof(unsigned short))) == NULL) {

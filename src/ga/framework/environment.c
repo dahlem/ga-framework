@@ -12,13 +12,14 @@
 #ifdef HAVE_MPI
 # include <mpi.h>
 # include <string.h>
-# include <limits.h>
-# define KILL_PILL USHRT_MAX
 #endif /* HAVE_MPI */
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>
+
+#ifdef NDEBUG
+# include <stdio.h>
+#endif /* NDEBUG */
 
 #ifdef HAVE_LIBGSL
 # include <gsl/gsl_rng.h>
@@ -147,6 +148,7 @@ int onePointCrossover(population_t *new)
 #else
         cut_off = (lrand48() % (new->bits - 2)) + 1;
 #endif
+        printf("cutoff: %d\n", cut_off);
 
         for (j = cut_off; j < new->bits; ++j) {
             temp = (new->individuals[i]).allele[j];
@@ -159,9 +161,9 @@ int onePointCrossover(population_t *new)
 }
 
 
-#ifdef HAVE_MPI
-void master(population_t *pop) 
+int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int))
 {
+#ifdef HAVE_MPI
     int i;
     int size;
     int jobs;
@@ -180,86 +182,70 @@ void master(population_t *pop)
         memcpy(individual, pop->individuals[jobs].allele,
                pop->bits * sizeof(unsigned short));
 
+#ifdef NDEBUG
+        printf("Send job %d to process %d.\n", jobs, i);
+        printChromosome(individual, pop->bits);
+        fflush(stdout);
+#endif /* NDEBUG */
         MPI_Send(individual, MPI_UNSIGNED_SHORT, pop->bits, i, jobs, MPI_COMM_WORLD);
+#ifdef NDEBUG
+        printf("Job %d to process %d sent.\n", jobs, i);
+        fflush(stdout);
+#endif /* NDEBUG */
         jobs++;
     }
 
     while (jobs < pop->size) {
+#ifdef NDEBUG
+        printf("Receive job.\n");
+        fflush(stdout);
+#endif /* NDEBUG */
         MPI_Recv(&result, MPI_DOUBLE, 1, MPI_ANY_SOURCE, MPI_ANY_TAG,
                  MPI_COMM_WORLD, &status);
 
+#ifdef NDEBUG
+        printf("Job %d received result %f from %d.\n",
+               status.MPI_TAG, result, status.MPI_SOURCE);
+        fflush(stdout);
+#endif /* NDEBUG */
         pop->individuals[status.MPI_TAG].fitness = result;
         
         memcpy(individual, pop->individuals[jobs].allele,
                pop->bits * sizeof(unsigned short));
 
+#ifdef NDEBUG
+        printf("Send job %d to process %d.\n", jobs, status.MPI_SOURCE);
+        printChromosome(individual, pop->bits);
+        fflush(stdout);
+#endif /* NDEBUG */
         MPI_Send(individual, MPI_UNSIGNED_SHORT, pop->bits, status.MPI_SOURCE,
                  jobs, MPI_COMM_WORLD);
+#ifdef NDEBUG
+        printf("Job %d to process %d sent.\n", jobs, i);
+        fflush(stdout);
+#endif /* NDEBUG */
 
         jobs++;
     }
 
     for(i = 1; i < size; ++i) {
+#ifdef NDEBUG
+        printf("Receive job.\n");
+        fflush(stdout);
+#endif /* NDEBUG */
         MPI_Recv(&result, MPI_DOUBLE, 1, MPI_ANY_SOURCE, MPI_ANY_TAG,
                  MPI_COMM_WORLD, &status);
+#ifdef NDEBUG
+        printf("Job %d received result %f from %d.\n",
+               status.MPI_TAG, result, status.MPI_SOURCE);
+        fflush(stdout);
+#endif /* NDEBUG */
 
         pop->individuals[status.MPI_TAG].fitness = result;        
-
-        /* Send no more jobs */
-        MPI_Send(0, 0, MPI_UNSIGNED_SHORT, i, KILL_PILL, MPI_COMM_WORLD);
     }
 
     free(individual);
-}
 
-
-void slave(double (*fitnessFuncPtr)(unsigned short*, int), int bits)
-{
-    int rank;
-    
-    unsigned short *individual;
-    MPI_Status status;
-    double fit;
-
-    individual = calloc(bits, sizeof(unsigned short));
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    while(1) {
-        MPI_Recv(individual, MPI_UNSIGNED_SHORT, bits, 0, MPI_ANY_TAG,
-                 MPI_COMM_WORLD, &status);
-
-        if (status.MPI_TAG == KILL_PILL) {
-            break;
-        }
-
-        /* calculate the fitness */
-        fit = fitnessFuncPtr(individual, bits);
-            
-        /* Send fitness value back */
-        MPI_Send(&fit, MPI_DOUBLE, 1, 0, status.MPI_TAG, MPI_COMM_WORLD);
-    }
-
-    free(individual);
-}
-#endif /* HAVE_MPI */
-
-
-int evaluate(population_t *pop, double (*fitnessFuncPtr)(unsigned short*, int))
-{
-#ifdef HAVE_MPI
-    int rank;
-
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    switch (rank) {
-      case 0:
-          master(pop);
-          break;
-      default:
-          slave(fitnessFuncPtr, pop->bits);
-          break;
-    }
 #else
     int i;
 

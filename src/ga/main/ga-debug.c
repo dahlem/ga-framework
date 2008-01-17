@@ -9,13 +9,29 @@
 /* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    */
 #include <stdio.h>
 
-#include "environment.h"
+#include "ga.h"
 #include "ga-debug.h"
 
 
-
-void printPop(const population_t *pop)
+void printChromosome(const unsigned short *allele, int bits)
 {
-    printf("Cumulative Fitness: ");
-    printf("%f\n", cumulativeFitness(pop));
+    int i;
+
+    for (i = 0; i < bits; ++i) {
+        printf("%d", allele[i]);
+    }
+}
+
+
+void printPop(const char *title, population_t *pop)
+{
+    int i;
+
+    printf("%s:\n", title);
+
+    for (i = 0; i < pop->size; ++i) {
+        printChromosome(pop->individuals[i].allele, pop->bits);
+    }
+
+    printf("%s done\n", title);
 }

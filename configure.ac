@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_INIT([562 - Assignment 4],
-        [0.3],
+        [0.9],
         [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie], 
         [GA-framework])
 
@@ -40,7 +40,7 @@ AC_SUBST(LIBTOOL_DEPS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdlib.h string.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([stdlib.h string.h sys/time.h unistd.h limits.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

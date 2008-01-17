@@ -57,6 +57,7 @@ typedef struct
     chromosome_t *individuals; /* array of chromosomes */
     int bits; /* the number of bits represented within the chromosomes */
     int size; /* the size of the population */
+    double cum_fit; /* cumulative fitness of the whole population */
 } population_t;
 
 

@@ -24,6 +24,7 @@ int cpypop(population_t *dest, const population_t *src)
     
     dest->size = src->size;
     dest->bits = src->bits;
+    dest->cum_fit = src->cum_fit;
 
     for (i = 0; i < src->size; ++i) {
         for (j = 0; j < src->bits; ++j) {

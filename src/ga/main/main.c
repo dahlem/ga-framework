@@ -27,13 +27,21 @@
 
 
 
-double fitness(unsigned short *allele, int bits) 
+/**
+ * Calculates the fitness of an individual. This function merely counts the
+ * bits set to one within the chromosome.
+ *
+ * @param unsigned short* the chromosome representation
+ * @param int the size of the chromsome
+ * @return the fitness value of the chromosome
+ */
+double fitness(unsigned short *allele, int bits)
 {
     int i;
     double result;
 
     result = 0.0;
-    
+
     for (i = 0; i < bits; ++i) {
         if (allele[i]) {
             result += 1.0;
@@ -41,6 +49,16 @@ double fitness(unsigned short *allele, int bits)
     }
 
     return result;
+}
+
+
+void stats(population_t *pop)
+{
+    printf("\n\nResults :\n");
+    printf("Generations : %d\n", globalArgs.generations);
+    printf("Population  : %d\n", globalArgs.population);
+    printf("Length      : %d\n", globalArgs.bits);
+    printf("Acc. Fitness : %f\n", pop->cum_fit);
 }
 
 
@@ -61,6 +79,7 @@ int main(int argc, char *argv[])
     init();
     process_cl(argc, argv);
 
+    /* initialise the random number generator */
 #ifdef HAVE_LIBGSL
     gsl_rng_env_setup();
     rng = gsl_rng_alloc(rng_type);
@@ -68,6 +87,7 @@ int main(int argc, char *argv[])
     srand48(12345);
 #endif
 
+    /* initialise and allocate the population */
     pop.size = selected.size = globalArgs.population_size;
     pop.bits = selected.bits = globalArgs.chromosome_bits;
 
@@ -78,9 +98,11 @@ int main(int argc, char *argv[])
 #endif
 
     callocPopulation(&selected);
-    
+
+    /* evaluate the initial fitness */
     evaluate(&pop, &fitness);
 
+    /* run for N generations */
     for (i = 0; i < globalArgs.generations; ++i) {
 
 #ifdef HAVE_LIBGSL
@@ -97,17 +119,22 @@ int main(int argc, char *argv[])
         survive(&pop, &selected);
 
 #ifdef NDEBUG
-        printPop(&pop);
+        printPop("Intermediate result", &pop);
 #endif
     }
-    
+
+    /* Evaluate and print stats */
+    evaluate(&pop, &fitness);
+    stats(&pop);
+
+    /* free memory */
     freePopulation(&pop);
     freePopulation(&selected);
 
 #ifdef HAVE_LIBGSL
     gsl_rng_free(rng);
 #endif
-    
+
 #ifdef HAVE_MPI
     MPI_Finalize();
 #endif /* HAVE_MPI */

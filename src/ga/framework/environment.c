@@ -283,6 +283,8 @@ double cumulativeFitness(population_t *pop)
         cumulative_fitness += (pop->individuals[i]).fitness;
     }
 
+    pop->cum_fit = cumulative_fitness;
+    
     return cumulative_fitness;
 }
 

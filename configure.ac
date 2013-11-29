@@ -1,4 +1,4 @@
-# Copyright (C) 2008 Dominik Dahlem <Dominik.Dahlem@cs.tcd.ie>
+# Copyright (C) 2008, 2013 Dominik Dahlem <Dominik.Dahlem@gmail.com>
 #  
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without 
@@ -8,9 +8,9 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-AC_INIT([562 - Assignment 4],
+AC_INIT([HPC Genetic Algorithm Framework],
         [1.0],
-        [Dominik Dahlem Dominik.Dahlem@cs.tcd.ie], 
+        [Dominik Dahlem Dominik.Dahlem@gmail.com], 
         [GA-framework])
 
 
@@ -141,7 +141,7 @@ done
 
 AC_MSG_RESULT([
 
-ga-framework $VERSION: Automatic configuration OK.
+$PACKAGE $VERSION: Automatic configuration OK.
 
 Type 'make' to compile this project.
 
